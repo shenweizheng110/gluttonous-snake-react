@@ -1,0 +1,16 @@
+{
+    "presets": [
+        ["@babel/env", {
+            "useBuiltIns": "usage",
+            "corejs": "2"
+        }],
+        "@babel/react",
+        "@babel/typescript"
+    ],
+    "plugins": [
+        "@babel/plugin-transform-runtime",
+        ["@babel/plugin-transform-typescript", {
+            "allowNamespaces": true
+        }]
+    ]
+}
