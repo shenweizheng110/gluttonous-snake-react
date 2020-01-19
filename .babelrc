@@ -11,6 +11,11 @@
         "@babel/plugin-transform-runtime",
         ["@babel/plugin-transform-typescript", {
             "allowNamespaces": true
+        }],
+        ["import", {
+            "libraryName": "antd",
+            "libraryDirectory": "es",
+            "style": "css"
         }]
     ]
 }

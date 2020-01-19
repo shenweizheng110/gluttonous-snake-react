@@ -10,11 +10,13 @@ const HtmlWebpackTagsPlugin = require('html-webpack-tags-plugin');
 const config = {
     mode: 'development',
     devtool: 'source-map',
-    entry: path.resolve(__dirname, 'src/main.tsx'),
+    entry: {
+        'home': path.resolve(__dirname, 'src/Home.tsx')
+    },
     output: {
         path: path.resolve(__dirname,'dist'),
         filename: 'js/[name].js',
-        publicPath: './'
+        publicPath: '/'
     },
     resolve: {
         modules: [path.resolve(__dirname,'node_modules'), path.resolve(__dirname,'src')],
@@ -50,7 +52,7 @@ const config = {
     },
     module: {
         rules: [{
-            test: /\.(js|tsx)$/,
+            test: /\.(js|tsx|ts)$/,
             exclude: /node_modules/,
             loader: 'happypack/loader?id=happyBabel'
         }, {
