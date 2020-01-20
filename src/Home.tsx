@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 import '../style/main.less';
 import { handleCanvasVague } from './utils/util';
 import { ConfigProvider } from 'antd';
@@ -8,6 +8,7 @@ import zhCN from 'antd/es/locale/zh_CN';
 import Rank from './app/rank';
 import Room from './app/room';
 import RoomCompare from './app/roomCompare';
+import PvP from './app/pvp';
 
 const { useEffect, useRef } = React;
 
@@ -45,8 +46,8 @@ const Home: React.FunctionComponent = () => {
 ReactDOM.render(
     <ConfigProvider locale={zhCN}>
         <Router>
-            <Redirect from='/' to='/home' />
             <Route path='/home' component={Home} />
+            <Route path='/pvp' component={PvP} />
         </Router>
     </ConfigProvider>,
     mountNode

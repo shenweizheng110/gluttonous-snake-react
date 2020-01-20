@@ -57,3 +57,77 @@ interface RoomPeopleItem {
 interface RoomPeopleItemProps {
     roomInfo: RoomPeopleItem;
 }
+
+// pvp对战房间内排行榜
+interface PvpRankItem {
+    username: string;
+    score: number;
+}
+
+// 旋转偏移量
+declare enum RotateOffset {
+    Top = 0,
+    Bottom = 180,
+    Left = 270,
+    Right = 90
+}
+
+// 路径项
+type RouteItem = [number, number];
+
+// 蛇节点 - 单个
+interface SnakeNode {
+    x: number;
+    y: number;
+    isHead: boolean;
+    color: string;
+    rotateOffset: RotateOffset;
+    radiusSize: number;
+    preId: string;
+    nextId: string;
+    id: string;
+    routes: RouteItem[];
+}
+
+// 蛇节点 - 多个
+interface SnakeNodes {
+    [key: string]: SnakeNode;
+}
+
+// 蛇
+interface Snake {
+    userId: string;
+    speed: number;
+    energyNum: number;
+    energy: number;
+    direction: string;
+    snakeHeadId: string;
+    snakeCount: number;
+    rotateOffset: RotateOffset;
+    recordNumber: number;
+}
+
+// 豆子 - 单个
+interface Bean {
+    x: number;
+    y: number;
+    val: number;
+    color: string;
+}
+
+// 豆子 - 多个
+interface Beans {
+    [key: string]: Bean;
+}
+
+// ws 命令为 show 得到的结构
+type ShowAction = {
+    snakeInfo: {
+        snakeNodes: SnakeNodes;
+        snakes: Snake[];
+    };
+    beans: Beans;
+}
+
+// ws 进程时间注册
+type WsEventsFnc = (ws: WebSocket) => void;

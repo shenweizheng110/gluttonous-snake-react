@@ -475,3 +475,53 @@ div,ul,p {
         float: right;
     }
 }
+
+.pvp {
+    background: repeating-linear-gradient(to right, transparent, transparent 20px, #F2F2F2 20px, #F2F2F2 22px),
+                repeating-linear-gradient(to bottom, transparent, transparent 20px, #F2F2F2 20px, #F2F2F2 22px);
+}
+
+.pvp-rank {
+    position: fixed;
+    right: 16px;
+    top: 16px;
+    background: transparent;
+    width: 220px;
+    z-index: 9999;
+
+    h2 {
+        text-align: center;
+    }
+
+    .rank-content {
+        vertical-align: middle;
+        font-size: 0;
+
+        &::after {
+            content: '';
+            width: 0;
+            height: 100%;
+            vertical-align: middle;
+            display: inline-block;
+        }
+    }
+
+    span {
+        display: inline-block;
+        vertical-align: middle;
+        font-size: 14px;
+
+        &:nth-of-type(1) {
+            margin-right: 8px;
+            width: 10%;
+        }
+
+        &:nth-of-type(2) {
+            width: 60%;
+        }
+
+        &:nth-of-type(3) {
+            width: 25%;
+        }
+    }
+}
