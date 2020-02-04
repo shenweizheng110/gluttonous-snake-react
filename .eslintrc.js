@@ -210,8 +210,9 @@ module.exports = {
         }], // 强制在大括号中使用一致的空格
         "array-bracket-spacing": [2, "never"], // 强制数组方括号中使用一致的空格
         "react-hooks/rules-of-hooks": "error",
-        "react-hooks/exhaustive-deps": "warn",
+        "react-hooks/exhaustive-deps": 0,
         "react/prop-types": [0],
-        "@typescript-eslint/explicit-function-return-type": 0
+        "@typescript-eslint/explicit-function-return-type": 0,
+        "@typescript-eslint/no-explicit-any": 0
     }
 }

@@ -9,6 +9,7 @@ import Rank from './app/rank';
 import Room from './app/room';
 import RoomCompare from './app/roomCompare';
 import PvP from './app/pvp';
+import Settings from './app/settings';
 
 const { useEffect, useRef } = React;
 
@@ -38,7 +39,8 @@ const Home: React.FunctionComponent = () => {
             </div>
             <Route exact path='/home' component={Rank} />
             <Route exact path='/home/room' component={Room} />
-            <Route exact path='/home/roomCompare' component={RoomCompare} />
+            <Route exact path='/home/roomPrepare' component={RoomCompare} />
+            <Route exact path='/home/settings' component={Settings} />
         </div>
     );
 };

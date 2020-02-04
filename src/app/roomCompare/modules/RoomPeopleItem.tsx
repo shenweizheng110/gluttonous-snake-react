@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Avatar, Icon } from 'antd';
 
 const RoomPeopleItem: React.FunctionComponent<RoomPeopleItemProps> = ({ roomInfo }) => {
-    const { name, url, isOwner, isCompare } = roomInfo;
+    const { name, url, isOwner, isPrepare, ownerId } = roomInfo;
 
     return (
         <div className='room-compare-item'>
@@ -10,13 +10,20 @@ const RoomPeopleItem: React.FunctionComponent<RoomPeopleItemProps> = ({ roomInfo
             <div className='people-name font-ellipse'>
                 {
                     isOwner
-                        ? <Icon type='home' />
-                        : isCompare
+                        ? (
+                            <>
+                                <Icon type='home' />
+                            </>
+                        )
+                        : isPrepare
                             ? <Icon type='check-circle' />
                             : <Icon type='loading' />
                 }
                 {
-                    !isOwner && <Icon type="close-circle" className='people-close' />
+                    // 判断是不是房主视角
+                    sessionStorage.getItem('userId') === ownerId
+                        ? !isOwner && <Icon type="close-circle" className='people-close' />
+                        : null
                 }
                 <span className='name-area'>{ name }</span>
             </div>

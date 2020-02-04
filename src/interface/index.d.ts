@@ -46,11 +46,13 @@ type IdFnc = (id: number) => void;
 
 // 房间成员数组
 interface RoomPeopleItem {
-    id: number;
+    id: string;
     name: string;
     url: string;
-    isCompare: boolean;
+    isPrepare: boolean;
     isOwner: boolean;
+    enterIndex: number;
+    ownerId: string;
 }
 
 // 房间成员组件props
@@ -131,3 +133,40 @@ type ShowAction = {
 
 // ws 进程时间注册
 type WsEventsFnc = (ws: WebSocket) => void;
+
+// 进入房间
+type HandleEnterRoom = (roomInfo: RoomItem) => void;
+
+// ws 发送函数
+type Send = (ws: WebSocket, type: string, payload: any) => void;
+
+// ws 接口返回参数中的载荷
+interface WsAPIResPayload {
+    errMsg: string;
+    data: any;
+}
+
+// ws 接口返回参数格
+interface WsAPIRes {
+    type: string;
+    data: WsAPIResPayload;
+}
+
+// 注册 Ws 事件
+type RegisterWsEvents = (ws: WebSocket) => void;
+
+// 键位配置项
+interface KeyMappingItem {
+    label: string;
+    prop: string;
+}
+
+// 键位配置初始值
+interface KeyMappingInitValue {
+    [key: string]: string;
+}
+
+// 键位表
+interface KeyMappingTable {
+    [key: string]: string;
+}

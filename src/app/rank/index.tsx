@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Button, Tabs, Icon } from 'antd';
 import RankList from './modules/RankList';
+import Common from '../../interface/common';
 
 const { TabPane } = Tabs;
 
@@ -50,15 +51,16 @@ const Rank: React.FunctionComponent = () => {
     );
 };
 
-const Root: React.FunctionComponent = () => {
+const Root: React.FunctionComponent<Common.NavigatorComponent> = ({ history }) => {
+
     return (
         <>
             <div className='rank'>
                 <Rank />
             </div>
             <div className='action-button'>
-                <Button className='m-r-24'>多人对战</Button>
-                <Button>人机对战</Button>
+                <Button className='m-r-24' onClick={() => { history.push('/home/room'); }}>多人对战</Button>
+                <Button onClick={() => { history.push('/pvp'); }}>人机对战</Button>
             </div>
         </>
     );

@@ -106,3 +106,11 @@ export const draw: Draw.DrawFnc = ({ snakeInfo, beans }, context, canvasEl) => {
         drawBeanItem.call(beans[key], context);
     }
 };
+
+// ws 发送数据
+export const send: Send = (ws, type, payload) => {
+    ws.send(JSON.stringify({
+        type,
+        data: payload
+    }));
+};

@@ -25,7 +25,6 @@
     "@typescript-eslint/eslint-plugin": "^2.11.0",
     "@typescript-eslint/parser": "^2.11.0",
     "awesome-typescript-loader": "^5.2.1",
-    "babel-eslint": "^10.0.3",
     "babel-loader": "^8.0.0-beta.0",
     "babel-plugin-import": "^1.13.0",
     "css-loader": "^3.2.1",
