@@ -1,60 +1,53 @@
 import * as React from 'react';
 import keyCode from '../../../utils/keyCode';
 import { Button } from 'antd';
+import { SettingsStoreContext } from '../stores/settingsStrore';
+
+const { useEffect, useContext } = React;
 
 const KeyMapping: React.FunctionComponent = () => {
-    const initValue: KeyMappingInitValue = {
-        'up': '87',
-        'down': '68',
-        'left': '65',
-        'right': '82',
-        'start': '13',
-        'exit': '27',
-        'speedUp': '32'
-    };
+    const store = useContext<SettingsDTS.SettingsStore>(SettingsStoreContext);
 
-    const keyMappings: KeyMappingItem[] = [{
-        label: '向上移动',
-        prop: 'up'
-    }, {
-        label: '向下移动',
-        prop: 'down'
-    }, {
-        label: '向左移动',
-        prop: 'left'
-    }, {
-        label: '向右移动',
-        prop: 'right'
-    }, {
-        label: '开始/暂停',
-        prop: 'start'
-    }, {
-        label: '退出房间',
-        prop: 'exit'
-    }, {
-        label: '加速',
-        prop: 'speedUp'
-    }];
+    const { userConfig, actions, keyMapping } = store;
+
+    useEffect(() => {
+        actions.getSettinsByUserId(sessionStorage.getItem('userId'));
+    }, []);
 
     return (
         <div className='keycode-settings'>
             {
-                keyMappings.map(item => (
-                    <div className='keycode-item' key={item.prop}>
+                userConfig && Object.keys(keyMapping).map(key => (
+                    <div className='keycode-item' key={key}>
                         <span className='keycode-label font-ellipse'>
-                            { item.label }
+                            { keyMapping[key].label }
                         </span>
                         <Button
                             type='primary'
                             className='primary-button keycode-btn'
                             size='small'
-                        >{ keyCode[initValue[item.prop]] }</Button>
+                            onClick={() => actions.handleKeyMappingFocus(key)}
+                        >
+                            {
+                                keyMapping[key].isFocus
+                                    ? '请按下键位'
+                                    : keyCode[userConfig[key]]
+                            }
+                        </Button>
                     </div>
                 ))
             }
             <div className='setting-footer m-t-24 t-r'>
-                <Button type='primary' className='primary-button m-r-16'>保存配置</Button>
-                <Button type='default' className='default-button'>恢复默认</Button>
+                <Button
+                    type='primary'
+                    className='primary-button m-r-16'
+                    onClick={() => actions.handleUpdateKeyMapping(sessionStorage.getItem('userId'))}
+                >保存配置</Button>
+                {/* <Button
+                    type='default'
+                    className='default-button'
+                    onClick={actions.handleRebackToInit}
+                >恢复默认</Button> */}
             </div>
         </div>
     );

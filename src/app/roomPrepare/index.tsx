@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, message, Spin } from 'antd';
+import { Button, message, Spin, Modal } from 'antd';
 import { useMaxHeight } from '../../utils/customHook';
 import RoomPeopleItem from './modules/RoomPeopleItem';
 import { send } from '../../utils/util';
@@ -16,7 +16,7 @@ const RoomCompare: React.FunctionComponent<Common.NavigatorComponent> = ({ histo
 
     const [peoples, setPeoples] = useState<RoomPeopleItem[]>([]);
 
-    const [gameInfo, setGameInfo] = useState<Game.GameItem>(null);
+    const [hostId, setHostId] = useState<string>('');
 
     const maxHeight = useMaxHeight(120 + 16 + 32);
 
@@ -37,22 +37,26 @@ const RoomCompare: React.FunctionComponent<Common.NavigatorComponent> = ({ histo
 
     // 处理获取游戏玩家的回调
     const handleRoomGameCallback: Game.HandleRoomGameCallback = (data) => {
-        console.log(data);
+        if (!data) {
+            message.error('当前房间已失效');
+            history.push('/home/room');
+            return;
+        }
         let users = data.users;
+        setHostId(data.hostId);
         let peoples: RoomPeopleItem[] = Object.keys(data.users).map((userId: string) => {
             let userItem = users[userId];
-            let { userInfo } = userItem;
-            setGameInfo(data);
+            let { username, cover, enterIndex, isPrepare } = userItem;
             if (sessionStorage.getItem('userId') === userId) {
-                setPrepare(userItem.isPrepare);
+                setPrepare(isPrepare);
             }
             return {
                 id: userId,
-                name: userInfo.username,
-                url: userInfo.cover,
-                isPrepare: userItem.isPrepare,
+                name: username,
+                url: cover,
+                isPrepare: isPrepare,
                 isOwner: data.hostId === userId,
-                enterIndex: userItem.enterIndex,
+                enterIndex: enterIndex,
                 ownerId: data.hostId
             };
         });
@@ -60,12 +64,19 @@ const RoomCompare: React.FunctionComponent<Common.NavigatorComponent> = ({ histo
         setPeoples(peoples);
     };
 
+    // 处理离开房间回调
+    const handleLeaveHomeCallback = () => {
+        history.push('/home/room');
+        sessionStorage.removeItem('ownerId');
+    };
+
     // 注册 ws 事件
     const registerWsEvent: RegisterWsEvents = (ws) => {
         ws.onopen = () => {
             setPageLoading(false);
             send(ws, 'roomGame', {
-                roomId: sessionStorage.getItem('roomId')
+                roomId: sessionStorage.getItem('roomId'),
+                userId: sessionStorage.getItem('userId')
             });
         };
 
@@ -81,11 +92,14 @@ const RoomCompare: React.FunctionComponent<Common.NavigatorComponent> = ({ histo
                     handleRoomGameCallback(ret.data.data);
                     break;
                 case 'start':
-                    ws.close();
+                    // ws.close();
                     history.push('/pvp');
                     break;
                 case 'error':
                     message.error(errMsg);
+                    break;
+                case 'goHome':
+                    handleLeaveHomeCallback();
                     break;
             };
         };
@@ -95,11 +109,33 @@ const RoomCompare: React.FunctionComponent<Common.NavigatorComponent> = ({ histo
         };
     };
 
+    const rebackRoomList = () => {
+        if (sessionStorage.getItem('ownerId') === sessionStorage.getItem('userId')) {
+            Modal.confirm({
+                title: '确认',
+                content: '房主离开房间，房间将删除，是否确认离开房间',
+                onOk() {
+                    history.push('/home/room');
+                }
+            });
+        } else {
+            history.push('/home/room');
+        }
+    };
+
     useEffect(() => {
         ws = new WebSocket('ws://localhost:3000/api/game');
         registerWsEvent(ws);
-    }, []);
 
+        return () => {
+            send(ws, 'leaveRoom', {
+                roomId: sessionStorage.getItem('roomId'),
+                userId: sessionStorage.getItem('userId')
+            });
+            sessionStorage.removeItem('ownerId');
+            ws.close();
+        };
+    }, []);
 
     return (
         <Spin spinning={pageLoading}>
@@ -115,16 +151,21 @@ const RoomCompare: React.FunctionComponent<Common.NavigatorComponent> = ({ histo
                     }
                 </div>
                 <div className='room-compare-footer'>
+                    <Button
+                        type='primary'
+                        className='primary-button m-r-16'
+                        onClick={rebackRoomList}
+                    >返回大厅</Button>
                     {
-                        gameInfo && gameInfo.hostId === sessionStorage.getItem('userId')
+                        hostId === sessionStorage.getItem('userId')
                             ? <Button
                                 type='primary'
-                                className='primary-button'
+                                className='primary-button m-r-16'
                                 onClick={handleStart}
                             >开始对局</Button>
                             : <Button
                                 type='primary'
-                                className='primary-button'
+                                className='primary-button m-r-16'
                                 onClick={handlePrepare}
                             >{ isPrepare ? '取消准备' : '准备' }</Button>
                     }

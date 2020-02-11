@@ -36,32 +36,24 @@ declare namespace Game {
         userId: string;
         colors: string[];
         initDirection: Direction;
-        up: Direction;
-        down: Direction;
-        left: Direction;
-        right: Direction;
         directionCode: KeyCodeConfig;
-        speedUp: Direction;
-        initSpeed: Direction;
+        speedUp: string;
+        initSpeed: number;
         dangerColor: string;
         eyeColor: string;
-    }
-
-    // 玩家个人信息
-    interface UserInfo {
-        username: string;
-        cover: string;
     }
 
     // 玩家
     interface Gamer {
         userId: string;
+        username: string;
+        cover: string;
         score: number;
         enterIndex: number;
         isPrepare: boolean;
         userConfig: UserConfig;
-        userInfo: UserInfo;
     }
+
     // 每一局游戏
     interface GameItem {
         roomId: string;
@@ -88,4 +80,7 @@ declare namespace Game {
 
     // 处理准备回调
     type HandlePrepareCallback = (data: GameItem) => void;
+
+    // 离开房间
+    type LeaveRoom = () => void;
 }

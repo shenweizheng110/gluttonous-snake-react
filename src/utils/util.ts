@@ -1,3 +1,4 @@
+import gameConfig from './gameConfig';
 /**
  * 解决canvas字体模糊问题
  * @param context canvas的2d上下文
@@ -99,11 +100,12 @@ export const drawBeanItem: Draw.DrawCommon = function(context) {
 export const draw: Draw.DrawFnc = ({ snakeInfo, beans }, context, canvasEl) => {
     const { snakeNodes, snakes } = snakeInfo;
     context.clearRect(0, 0, canvasEl.width, canvasEl.height);
-    for (let i = 0; i < snakes.length; i++) {
-        drawSnake(snakes[i], snakeNodes, context);
-    }
+    context.scale(canvasEl.width / gameConfig.maxWidth, canvasEl.height / gameConfig.maxHeight);
     for (let key in beans) {
         drawBeanItem.call(beans[key], context);
+    }
+    for (let i = 0; i < snakes.length; i++) {
+        drawSnake(snakes[i], snakeNodes, context);
     }
 };
 
@@ -114,3 +116,19 @@ export const send: Send = (ws, type, payload) => {
         data: payload
     }));
 };
+
+// 随机生成hash
+export const generateHash = () => {
+    const randomStr = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'g', 'k', 'l', 'm', 'n',
+        'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 1, 2, 3, 4, 5, 6, 6, 8, 9, 0
+    ];
+    let len = randomStr.length;
+    let str = '';
+    for (let i = 0; i < 8; i++) {
+        let randomIndex = Math.floor(Math.random() * len);
+        str += randomStr[randomIndex];
+    }
+    return str;
+};
+
+export const qiniuDomain = 'http://qiniu.shenweini.cn/';

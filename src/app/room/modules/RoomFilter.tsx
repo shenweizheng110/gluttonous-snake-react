@@ -1,28 +1,30 @@
 import * as React from 'react';
 import { Form, Input, Button } from 'antd';
 import { FormComponentProps } from 'antd/es/form';
-import AddRoom from './AddRoom';
+
+import { RoomStoreContext } from '../stores/roomStore';
 
 const FormItem = Form.Item;
 
-const { useRef } = React;
+const { useContext } = React;
 
 const RoomFilter: React.FunctionComponent<FormComponentProps> = ({ form }) => {
+    const store = useContext<RoomDTS.RoomStore>(RoomStoreContext);
+
+    const { actions } = store;
+
     const { getFieldDecorator } = form;
 
-    const addRoomRef = useRef();
-
-    const openAddRoomModal: VoidFnc = () => {
-        let { current } = addRoomRef;
-        (current as ModalProps).openModal();
-    };
+    const validNumber = (e: any) => e.target.value.replace(/\D/g, '');
 
     return (
         <>
             <Form layout='inline' className='filter-form'>
                 <FormItem label='房间号'>
                     {
-                        getFieldDecorator('roomId', {})(
+                        getFieldDecorator('roomId', {
+                            getValueFromEvent: validNumber
+                        })(
                             <Input
                                 placeholder='请输入房间ID'
                                 className='filter-input'
@@ -42,7 +44,7 @@ const RoomFilter: React.FunctionComponent<FormComponentProps> = ({ form }) => {
                 </FormItem>
                 <FormItem label='房主名称'>
                     {
-                        getFieldDecorator('owner', {})(
+                        getFieldDecorator('ownerName', {})(
                             <Input
                                 placeholder='请输入房主名称'
                                 className='filter-input'
@@ -52,7 +54,9 @@ const RoomFilter: React.FunctionComponent<FormComponentProps> = ({ form }) => {
                 </FormItem>
                 <FormItem label='最小速度'>
                     {
-                        getFieldDecorator('miniSpeed', {})(
+                        getFieldDecorator('miniSpeed', {
+                            getValueFromEvent: validNumber
+                        })(
                             <Input
                                 placeholder='请输入最小速度'
                                 className='filter-input'
@@ -62,7 +66,9 @@ const RoomFilter: React.FunctionComponent<FormComponentProps> = ({ form }) => {
                 </FormItem>
                 <FormItem label='最大速度'>
                     {
-                        getFieldDecorator('maxSpeed', {})(
+                        getFieldDecorator('maxSpeed', {
+                            getValueFromEvent: validNumber
+                        })(
                             <Input
                                 placeholder='请输入最大速度'
                                 className='filter-input'
@@ -71,12 +77,11 @@ const RoomFilter: React.FunctionComponent<FormComponentProps> = ({ form }) => {
                     }
                 </FormItem>
                 <FormItem className='filter-form-action'>
-                    <Button type='primary' className='m-r-16 primary-button'>筛选</Button>
-                    <Button type='default' className='m-r-16 default-button'>重置</Button>
-                    <Button type='primary' className='primary-button' onClick={openAddRoomModal}>创建房间</Button>
+                    <Button type='primary' className='m-r-16 primary-button' onClick={() => actions.filterRoom(form)}>筛选</Button>
+                    <Button type='default' className='m-r-16 default-button' onClick={() => actions.resetFilter(form)}>重置</Button>
+                    <Button type='primary' className='primary-button' onClick={actions.openModal}>创建房间</Button>
                 </FormItem>
             </Form>
-            <AddRoom selfRef={addRoomRef} />
         </>
     );
 };

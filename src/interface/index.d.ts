@@ -6,18 +6,6 @@ interface CanvasContext extends CanvasRenderingContext2D {
     oBackingStorePixelRatio?: number;
 }
 
-// 排行榜 list 组件下方 icon text 组件的props
-type IconTextProps = {
-    type: string;
-    text: string;
-    liked: boolean;
-}
-
-// 排行榜 list footer 组件
-type RankListFooterProps = {
-    rank: number | string;
-}
-
 // 表单布局
 type FormLayout = {
     span?: number;
@@ -62,6 +50,7 @@ interface RoomPeopleItemProps {
 
 // pvp对战房间内排行榜
 interface PvpRankItem {
+    userId: string;
     username: string;
     score: number;
 }
@@ -134,9 +123,6 @@ type ShowAction = {
 // ws 进程时间注册
 type WsEventsFnc = (ws: WebSocket) => void;
 
-// 进入房间
-type HandleEnterRoom = (roomInfo: RoomItem) => void;
-
 // ws 发送函数
 type Send = (ws: WebSocket, type: string, payload: any) => void;
 
@@ -154,17 +140,6 @@ interface WsAPIRes {
 
 // 注册 Ws 事件
 type RegisterWsEvents = (ws: WebSocket) => void;
-
-// 键位配置项
-interface KeyMappingItem {
-    label: string;
-    prop: string;
-}
-
-// 键位配置初始值
-interface KeyMappingInitValue {
-    [key: string]: string;
-}
 
 // 键位表
 interface KeyMappingTable {

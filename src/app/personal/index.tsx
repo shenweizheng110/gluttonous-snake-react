@@ -1,33 +1,33 @@
 import * as React from 'react';
 import { Tabs, Icon } from 'antd';
-import KeyMapping from './modules/KeyMapping';
-import GameSetting from './modules/GameSetting';
-import PermisionSetting from './modules/PermissionSetting';
-import SettingsStore from './stores/settingsStrore';
+import Base from './modules/Base';
+import PersonalStore from './stores/personalStore';
+import Phone from './modules/Phone';
+import Password from './modules/Password';
 
 const { TabPane } = Tabs;
 
-const Settings: React.FunctionComponent = () => {
+const Personal: React.FunctionComponent = () => {
     const tabs = [{
-        key: '1',
-        label: '键位设置',
+        key: 'base',
+        label: '个人信息',
         icon: 'stock',
-        component: <KeyMapping />
+        component: <Base />
     }, {
-        key: '2',
-        label: '对局设置',
+        key: 'phone',
+        label: '手机号重置',
         icon: 'fire',
-        component: <GameSetting />
+        component: <Phone />
     }, {
-        key: '3',
-        label: '权限设置',
+        key: 'password',
+        label: '密码修改',
         icon: 'flag',
-        component: <PermisionSetting />
+        component: <Password />
     }];
 
     return (
-        <div className='settings'>
-            <SettingsStore>
+        <div className='personal'>
+            <PersonalStore>
                 <Tabs className='rank-tab' tabPosition='left'>
                     {
                         tabs.map(item => (
@@ -45,9 +45,9 @@ const Settings: React.FunctionComponent = () => {
                         ))
                     }
                 </Tabs>
-            </SettingsStore>
+            </PersonalStore>
         </div>
     );
 };
 
-export default Settings;
+export default Personal;

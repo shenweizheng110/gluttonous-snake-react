@@ -1,17 +1,20 @@
 import * as React from 'react';
 import { Form, Input, Modal } from 'antd';
 import { FormComponentProps } from 'antd/es/Form';
+import { RoomStoreContext } from '../stores/roomStore';
 
 const FormItem = Form.Item;
 
-const { useImperativeHandle, useState } = React;
+const { useContext } = React;
 
-interface ModalFormProps extends FormComponentProps {
-    selfRef: React.Ref<ModalProps>;
+interface AddRoomProps extends FormComponentProps {
+    handleEnterRoom: RoomDTS.HandleEnterRoom;
 }
 
-const AddRoom: React.FunctionComponent<ModalFormProps> = ({ form, selfRef }) => {
-    const [visible, setVisible] = useState(false);
+const AddRoom: React.FunctionComponent<AddRoomProps> = ({ form, handleEnterRoom }) => {
+    const store = useContext<RoomDTS.RoomStore>(RoomStoreContext);
+
+    const { actions, isShowModal } = store;
 
     const { getFieldDecorator } = form;
 
@@ -33,24 +36,13 @@ const AddRoom: React.FunctionComponent<ModalFormProps> = ({ form, selfRef }) => 
         }]
     };
 
-    useImperativeHandle(selfRef, () => ({
-        openModal: () => {
-            setVisible(true);
-        }
-    }));
-
-    // 处理弹窗关闭
-    const handleCancel: VoidFnc = () => {
-        form.resetFields();
-        setVisible(false);
-    };
-
     return (
         <Modal
             title='创建房间'
-            visible={visible}
+            visible={isShowModal}
             width={700}
-            onCancel={handleCancel}
+            onCancel={() => actions.closeModal(form)}
+            onOk={() => actions.addRoom(form, handleEnterRoom)}
         >
             <Form layout='inline' className='add-room-form'>
                 <FormItem label='房间名称'>
@@ -94,4 +86,4 @@ const AddRoom: React.FunctionComponent<ModalFormProps> = ({ form, selfRef }) => 
     );
 };
 
-export default Form.create<ModalFormProps>({})(AddRoom);
+export default Form.create<AddRoomProps>({})(AddRoom);

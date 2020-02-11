@@ -2,35 +2,50 @@ import * as React from 'react';
 import { Button, Tabs, Icon } from 'antd';
 import RankList from './modules/RankList';
 import Common from '../../interface/common';
+import RankStore, { RankStoreContext } from './stores/rankStore';
+
+const { useContext, useEffect } = React;
 
 const { TabPane } = Tabs;
 
 const Rank: React.FunctionComponent = () => {
+    const store = useContext<RankDTS.RankStoreValue>(RankStoreContext);
+
+    const { actions } = store;
+
     const tabs = [{
-        key: '1',
+        key: 'score',
         label: '最长长度',
-        icon: 'stock',
-        component: <span>最长长度</span>
+        icon: 'stock'
     }, {
-        key: '2',
+        key: 'recordCount',
         label: '总对局数',
-        icon: 'fire',
-        component: <span>总对局数</span>
+        icon: 'fire'
     }, {
-        key: '3',
+        key: 'defeatCount',
         label: '总击杀数',
-        icon: 'flag',
-        component: <span>总击杀数</span>
+        icon: 'flag'
     }, {
-        key: '4',
+        key: 'maxDefeat',
         label: '最多击杀',
-        icon: 'apple',
-        component: <span>最多击杀</span>
+        icon: 'apple'
     }];
+
+    /**
+     * 处理tab页切换
+     * @param activeKey 新的key
+     */
+    const handleTabChange: RankDTS.HandleTabChange = (activeKey) => {
+        actions.getRankList(activeKey, 1, 10);
+    };
+
+    useEffect(() => {
+        actions.getRankList('score', 1, 10);
+    }, []);
 
     return (
         <>
-            <Tabs className='rank-tab' tabPosition='left'>
+            <Tabs className='rank-tab' tabPosition='left' onChange={handleTabChange}>
                 {
                     tabs.map(item => (
                         <TabPane
@@ -56,7 +71,9 @@ const Root: React.FunctionComponent<Common.NavigatorComponent> = ({ history }) =
     return (
         <>
             <div className='rank'>
-                <Rank />
+                <RankStore>
+                    <Rank />
+                </RankStore>
             </div>
             <div className='action-button'>
                 <Button className='m-r-24' onClick={() => { history.push('/home/room'); }}>多人对战</Button>
@@ -65,5 +82,6 @@ const Root: React.FunctionComponent<Common.NavigatorComponent> = ({ history }) =
         </>
     );
 };
+
 
 export default Root;

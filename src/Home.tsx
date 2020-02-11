@@ -1,46 +1,48 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import '../style/main.less';
-import { handleCanvasVague } from './utils/util';
-import { ConfigProvider } from 'antd';
+import { ConfigProvider, Avatar } from 'antd';
 import zhCN from 'antd/es/locale/zh_CN';
 import Rank from './app/rank';
 import Room from './app/room';
-import RoomCompare from './app/roomCompare';
+import RoomCompare from './app/roomPrepare';
 import PvP from './app/pvp';
+import Login from './app/login';
 import Settings from './app/settings';
-
-const { useEffect, useRef } = React;
+import Header from './app/common/Header';
+import Register from './app/register';
+import Personal from './app/personal';
+import Reset from './app/reset';
 
 const mountNode: Element = document.getElementById('root');
 
 const Home: React.FunctionComponent = () => {
-    const canvasRef = useRef(null);
-
-    useEffect(() => {
-        const logoEl: HTMLCanvasElement = canvasRef.current;
-        const context: CanvasRenderingContext2D = logoEl.getContext('2d');
-        handleCanvasVague(context, logoEl);
-        context.textAlign = 'center';
-        context.font = 'bold 50px Georgia, serif';
-        let gradient = context.createLinearGradient(0, 0, 400, 120);
-        gradient.addColorStop(0, '#60FF70');
-        gradient.addColorStop(1, '#9850FF');
-        context.fillStyle = gradient;
-        context.fillText('Gluttonous Snake', Math.round(logoEl.offsetWidth / 2), logoEl.offsetHeight / 1.2);
-        context.fill();
-    }, []);
-
     return (
         <div className='home'>
-            <div className='flex-center'>
-                <canvas ref={canvasRef} id='logo' width='500' height='120' />
-            </div>
+            <Link to='/home'>
+                <Header />
+            </Link>
             <Route exact path='/home' component={Rank} />
             <Route exact path='/home/room' component={Room} />
             <Route exact path='/home/roomPrepare' component={RoomCompare} />
             <Route exact path='/home/settings' component={Settings} />
+            <Route exact path='/home/personal' component={Personal} />
+            <Link to='/home/settings'>
+                <div className='settings-right-bottom'>
+                    <img src='http://qiniu.shenweini.cn/settings.png' alt='设置中心' />
+                    <h3>设置中心</h3>
+                </div>
+            </Link>
+            <div className='home-user'>
+                <Avatar size={48} src={sessionStorage.getItem('headImg') || 'http://qiniu.shenweini.cn/list1.jpeg'} />
+            </div>
+            <Link to='/home/room'>
+                <div className='settings-left-bottom'>
+                    <img src='http://qiniu.shenweini.cn/room.png' alt='游戏大厅' />
+                    <h3>游戏大厅</h3>
+                </div>
+            </Link>
         </div>
     );
 };
@@ -50,6 +52,9 @@ ReactDOM.render(
         <Router>
             <Route path='/home' component={Home} />
             <Route path='/pvp' component={PvP} />
+            <Route path='/login' component={Login} />
+            <Route path='/register' component={Register} />
+            <Route path='/reset' component={Reset} />
         </Router>
     </ConfigProvider>,
     mountNode

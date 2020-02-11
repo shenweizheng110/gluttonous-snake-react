@@ -1,18 +1,24 @@
 import * as React from 'react';
-import { Icon, Pagination, message, Spin } from 'antd';
+import { Icon, Pagination, message, Spin, Empty } from 'antd';
 import { useMaxHeight } from '../../../utils/customHook';
 import Common from '../../../interface/common';
 import { withRouter } from 'react-router-dom';
 import { send } from '../../../utils/util';
+import { RoomStoreContext } from '../stores/roomStore';
+import AddRoom from './AddRoom';
+import EnterRoom from './EnterRoom';
 
-const { useState, useEffect } = React;
+const { useState, useEffect, useContext } = React;
+
 let ws: WebSocket = null;
 
 const RoomList: React.FunctionComponent<Common.NavigatorComponent> = ({ history }) => {
 
-    const [roomList, setRoomList] = useState<RoomItem[]>([]);
+    const store = useContext<RoomDTS.RoomStore>(RoomStoreContext);
 
-    const [pageLoading, setPageLoading] = useState<boolean>(true);
+    const { roomList, actions, pagination } = store;
+
+    const [pageLoading, setPageLoading] = useState<boolean>(false);
 
     const maxHeight = useMaxHeight(120 + 150 + 40 + 40 + 30);
 
@@ -30,7 +36,7 @@ const RoomList: React.FunctionComponent<Common.NavigatorComponent> = ({ history 
             }
             switch (ret.type) {
                 case 'enterRoom':
-                    ws.close();
+                    // ws.close();
                     history.push('/home/roomPrepare');
                     break;
                 case 'error':
@@ -45,81 +51,83 @@ const RoomList: React.FunctionComponent<Common.NavigatorComponent> = ({ history 
     };
 
     useEffect(() => {
-        let res: RoomItem[] = [];
-        for (let i = 0; i < 10; i++) {
-            res.push({
-                roomId: i,
-                img: `http://qiniu.shenweini.cn/snake${Math.floor(Math.random() * 20 + 1)}.jpeg`,
-                owner: 'Smail~Every',
-                count: Math.ceil(Math.random() * 100),
-                roomName: '这是一个房间'
-            });
-        }
-        setRoomList(res);
+        actions.getRoomList(1, 10);
         ws = new WebSocket('ws://localhost:3000/api/game');
         registerWsEvent(ws);
+        return () => {
+            ws.close();
+        };
     }, []);
 
-    // 处理进入房间
-    const handleEnterRoom: HandleEnterRoom = (roomInfo) => {
-        sessionStorage.setItem('roomId', roomInfo.roomId + '');
-        let userId = sessionStorage.getItem('userId') || Math.floor(Math.random() * 100) + '';
+    const handleRoomPasswordCallback = (roomInfo: any) => {
+        let { roomId, ownerId } = roomInfo;
+        sessionStorage.setItem('roomId', roomId + '');
+        sessionStorage.setItem('ownerId', ownerId + '');
+        let userId = sessionStorage.getItem('userId');
         send(ws, 'enterRoom', {
             roomId: roomInfo.roomId + '',
-            userId,
-            userConfig: {
-                userId,
-                colors: ['#BD4A45', '#333333', '#333366', '#333399', '#3333CC', '#336633', '#663366', '#663399'],
-                initDirection: 'Top',
-                up: '',
-                down: '',
-                left: '',
-                right: '',
-                directionCode: {
-                    '87': 'Top',
-                    '83': 'Bottom',
-                    '65': 'Left',
-                    '68': 'Right'
-                },
-                speedUp: '',
-                initSpeed: '2',
-                dangerColor: 'red',
-                eyeColor: '#000'
-            },
-            userInfo: {
-                username: `玩家${userId}`,
-                cover: 'http://qiniu.shenweini.cn/list2.jpeg'
-            }
+            userId
         });
+    };
+
+    // 处理进入房间
+    const handleEnterRoom: RoomDTS.HandleEnterRoom = (roomInfo) => {
+        let { hasPassword } = roomInfo;
+        if (hasPassword) {
+            actions.showEnterRoomModal(roomInfo);
+            return;
+        }
+        handleRoomPasswordCallback(roomInfo);
     };
 
     return (
         <Spin spinning={pageLoading}>
-            <ul className='room-list' style={{
-                maxHeight: maxHeight
-            }}>
-                {
-                    roomList.map(item => (
-                        <div className='room-item' key={item.roomId} onClick={() => handleEnterRoom(item)}>
-                            <div className='room-title font-ellipse'>{ item.roomName }</div>
-                            <div className='room-cover'>
-                                <img src={item.img} alt='img'/>
-                            </div>
-                            <footer>
-                                <span className='font-ellipse room-owner'>
-                                    <Icon type="home" />
-                                    <span>{ item.owner }</span>
-                                </span>
-                                <span className='font-ellipse room-count'>
-                                    <Icon type="user" />
-                                    <span>{ item.count } 人</span>
-                                </span>
-                            </footer>
-                        </div>
-                    ))
-                }
-            </ul>
-            <Pagination className='room-pagination' defaultCurrent={1} total={roomList.length} />
+            {
+                roomList.length === 0
+                    ? <Empty />
+                    : <>
+                        <ul className='room-list' style={{
+                            maxHeight: maxHeight
+                        }}>
+                            {
+                                roomList.map(item => (
+                                    <div className='room-item' key={item.roomId} onClick={() => handleEnterRoom(item)}>
+                                        <div className='room-title font-ellipse'>
+                                            {
+                                                item.hasPassword
+                                                    ? <Icon type="lock" />
+                                                    : null
+                                            }
+                                            { item.roomName }
+                                        </div>
+                                        <div className='room-cover'>
+                                            <img src={item.roomCover} alt='img'/>
+                                        </div>
+                                        <footer>
+                                            <span className='font-ellipse room-owner'>
+                                                <Icon type="home" />
+                                                <span>{ item.username }</span>
+                                            </span>
+                                            <span className='font-ellipse room-count'>
+                                                <Icon type="user" />
+                                                <span>{ item.peopleCount } 人</span>
+                                            </span>
+                                        </footer>
+                                    </div>
+                                ))
+                            }
+                        </ul>
+                        <Pagination
+                            className='room-pagination'
+                            current={pagination.page}
+                            total={pagination.total}
+                            pageSize={pagination.pageSize}
+                            onChange={actions.getRoomList}
+                        />
+                    </>
+            }
+            <AddRoom handleEnterRoom={handleEnterRoom} />
+            <EnterRoom callback={handleRoomPasswordCallback} />
         </Spin>
     );
 };
