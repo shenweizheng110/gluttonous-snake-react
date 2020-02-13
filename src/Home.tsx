@@ -14,6 +14,7 @@ import Header from './app/common/Header';
 import Register from './app/register';
 import Personal from './app/personal';
 import Reset from './app/reset';
+import Compete from './app/compete';
 
 const mountNode: Element = document.getElementById('root');
 
@@ -35,7 +36,9 @@ const Home: React.FunctionComponent = () => {
                 </div>
             </Link>
             <div className='home-user'>
-                <Avatar size={48} src={sessionStorage.getItem('headImg') || 'http://qiniu.shenweini.cn/list1.jpeg'} />
+                <Link to='/home/personal'>
+                    <Avatar size={48} src={sessionStorage.getItem('headImg') || 'http://qiniu.shenweini.cn/list1.jpeg'} />
+                </Link>
             </div>
             <Link to='/home/room'>
                 <div className='settings-left-bottom'>
@@ -55,6 +58,7 @@ ReactDOM.render(
             <Route path='/login' component={Login} />
             <Route path='/register' component={Register} />
             <Route path='/reset' component={Reset} />
+            <Route path='/compete' component={Compete} />
         </Router>
     </ConfigProvider>,
     mountNode

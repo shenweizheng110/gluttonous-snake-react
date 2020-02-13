@@ -77,7 +77,7 @@ const Root: React.FunctionComponent<Common.NavigatorComponent> = ({ history }) =
             </div>
             <div className='action-button'>
                 <Button className='m-r-24' onClick={() => { history.push('/home/room'); }}>多人对战</Button>
-                <Button onClick={() => { history.push('/pvp'); }}>人机对战</Button>
+                <Button onClick={() => { history.push('/compete'); }}>人机对战</Button>
             </div>
         </>
     );

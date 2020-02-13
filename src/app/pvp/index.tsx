@@ -11,9 +11,6 @@ let ws: WebSocket;
 let context: CanvasRenderingContext2D;
 let pvpCanvasEl: HTMLCanvasElement;
 
-const maxWidth = 1680;
-const maxHeight = 765;
-
 const PvP: React.FunctionComponent<Common.NavigatorComponent> = ({ history }) => {
     const pvpCanvasRef = useRef(null);
 
